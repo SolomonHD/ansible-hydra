@@ -1,0 +1,35 @@
+---
+# ROLE: hydra-tutorials
+# roles/hydra-tutorials/tasks/hyrax-sample.yml
+#
+# Configure a sample Hyrax application and
+# preload gem dependencies required to run any Hyrax-based application
+#
+
+- name: generate Hyrax demo app
+  command: ".rvm/bin/rvm all do rails new example-hyrax -m https://raw.githubusercontent.com/projecthydra-labs/hyrax/master/template.rb"
+
+- name: check for solr & fedora install downloads
+  stat:
+    path: /var/tmp/solr-{{ solr_version }}.zip
+  register: solr_install
+
+- name: link solr & fedora install files
+  # use single stored copy linked into sample app temp dir 
+  # this avoids re-downloading or multiple copies
+  file:
+    src:  /var/tmp/{{ item }}
+    dest: /home/{{ ansible_user_id }}/example-hyrax/tmp/{{ item }}
+    state: link
+  with_items:
+    - solr-{{ solr_version }}.zip
+    - solr-{{ solr_version }}.zip.md5
+    - fcrepo-webapp-{{ fcrepo_version }}-jetty-console.jar
+    - fcrepo-webapp-{{ fcrepo_version }}-jetty-console.jar.md5
+  when: solr_install.stat.exists
+
+- name: run redis
+  service: name=redis-server state=started
+  
+- name: install FITS
+  include: ../../sufia_dependencies/install/tasks/fits.yml

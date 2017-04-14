@@ -7,12 +7,6 @@
 
 - name: Download solr and fedora runtime files
   include: wrappers.yml
-  
-- name: Setup Dive-into-Hydra tutorial
-  include: dive-into-hydra.yml
-  
-- name: Setup Sufia sample application
-  include: sufia-sample.yml
-  
-- name: Install curation_concerns
-  include: cc-setup.yml
+    
+- name: Setup Hyrax sample application
+  include: hyrax-sample.yml
